@@ -1,5 +1,6 @@
 import tensorflow as tf
-import layer_utils
+
+from model import layer_utils
 
 
 class Simple:

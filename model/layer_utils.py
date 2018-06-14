@@ -7,7 +7,8 @@ def conv_layer(
         inputs,
         out_channels,
         kernel_size,
-        name):
+        name,
+        stride=1):
     with tf.variable_scope(name):
         in_channels = inputs.shape[-1]
         filters = kernel_size + [in_channels] + [out_channels]
@@ -15,7 +16,7 @@ def conv_layer(
                                  initializer=tf.truncated_normal_initializer(stddev=stddev))
         biases = tf.get_variable('biases', [out_channels],
                                  initializer=tf.truncated_normal_initializer(stddev=stddev))
-        conv = tf.nn.conv2d(inputs, kernel, strides=[1, 1, 1, 1], padding='SAME')
+        conv = tf.nn.conv2d(inputs, kernel, strides=[1, stride, stride, 1], padding='SAME')
         return tf.nn.relu(conv + biases, name='relu')
 
 
