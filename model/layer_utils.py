@@ -48,3 +48,13 @@ def dropout_layer(inputs, keep_prob, training, name):
     with tf.name_scope(name):
         return tf.cond(training, lambda: tf.nn.dropout(inputs, keep_prob, name='dropout'),
                        lambda: inputs)
+
+
+def cal_accuracy(result_tensor, ground_truth_tensor):
+    """Inserts the operations we need to evaluate the accuracy of our results."""
+    with tf.name_scope('accuracy'):
+        with tf.name_scope('correct_prediction'):
+            correct_prediction = tf.equal(tf.argmax(result_tensor, 1), tf.argmax(ground_truth_tensor, 1))
+        with tf.name_scope('accuracy'):
+            accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+    return accuracy
