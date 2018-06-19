@@ -13,10 +13,15 @@ class Simple:
         self.n_class = n_class
 
         parent_dir = os.path.dirname(os.path.dirname(__file__))
-        self.train_writer = tf.summary.FileWriter(parent_dir + '/my_graph/{}/train'.format(self.name))
-        self.validation_writer = tf.summary.FileWriter(parent_dir + '/my_graph/{}/validation'.format(self.name))
+        self.train_writer = tf.summary.FileWriter(os.path.join(parent_dir, 'my_graph', self.name, 'train'))
+        self.validation_writer = tf.summary.FileWriter(os.path.join(parent_dir, 'my_graph', self.name, 'validation'))
+
+        self.checkpoint_dir = os.path.join(parent_dir, 'checkpoints', self.name)
+        os.makedirs(self.checkpoint_dir, exist_ok=True)
+        self.checkpoint_path = os.path.join(self.checkpoint_dir, 'checkpoint')
 
         self.load()
+        self.saver = tf.train.Saver(max_to_keep=1)
 
     def load(self):
         with tf.name_scope('data'):
@@ -65,3 +70,13 @@ class Simple:
         if self.train_writer:
             self.train_writer.add_summary(summaries, global_step)
         return loss
+
+    def restore(self, sess):
+        ckpt = tf.train.get_checkpoint_state(self.checkpoint_dir)
+        # if that checkpoint exists, restore from checkpoint
+        if ckpt and ckpt.model_checkpoint_path:
+            self.saver.restore(sess, ckpt.model_checkpoint_path)
+            print('restore from checkpoints')
+
+    def save(self, sess):
+        self.saver.save(sess, self.checkpoint_path, self.global_step)

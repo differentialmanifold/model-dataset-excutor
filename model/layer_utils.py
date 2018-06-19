@@ -1,4 +1,5 @@
 import tensorflow as tf
+import os
 
 stddev = 0.1
 
@@ -58,3 +59,11 @@ def cal_accuracy(result_tensor, ground_truth_tensor):
         with tf.name_scope('accuracy'):
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
     return accuracy
+
+
+def make_dir(path):
+    """ Create a directory if there isn't one already. """
+    try:
+        os.mkdir(path)
+    except OSError:
+        pass

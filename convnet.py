@@ -18,7 +18,6 @@ import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 from tensorflow.python import debug as tf_debug
 
-import utils
 from model import *
 
 N_CLASSES = 10
@@ -37,9 +36,6 @@ N_EPOCHS = 10
 t_model = simple_model.Simple([28, 28, 1], N_CLASSES)
 logits = t_model.logits
 
-utils.make_dir('checkpoints')
-utils.make_dir('checkpoints/{}'.format(t_model.name))
-
 
 def get_graph_variable(name):
     variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
@@ -55,14 +51,8 @@ with tf.Session() as sess:
     # sess = tf_debug.LocalCLIDebugWrapperSession(sess, ui_type='curses')
 
     sess.run(tf.global_variables_initializer())
-    saver = tf.train.Saver(max_to_keep=1)
 
-    ##### You have to create folders to store checkpoints
-    ckpt = tf.train.get_checkpoint_state('checkpoints/{}'.format(t_model.name))
-    # if that checkpoint exists, restore from checkpoint
-    if ckpt and ckpt.model_checkpoint_path:
-        saver.restore(sess, ckpt.model_checkpoint_path)
-        print('restore from checkpoints')
+    t_model.restore(sess)
 
     initial_step = t_model.global_step.eval()
 
@@ -80,7 +70,7 @@ with tf.Session() as sess:
         if (index + 1) % SKIP_STEP == 0:
             print('Average loss at step {}: {:5.1f}'.format(index + 1, total_loss / SKIP_STEP))
             total_loss = 0.0
-            saver.save(sess, 'checkpoints/{}/mnist-convnet'.format(t_model.name), index)
+            t_model.save(sess)
 
             validation_X_batch, validation_Y_batch = mnist.test.next_batch(BATCH_SIZE)
             validation_summary = sess.run(t_model.summaries,
