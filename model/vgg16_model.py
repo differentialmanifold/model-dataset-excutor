@@ -5,9 +5,9 @@ from model.base_model import BaseModel
 
 
 class Vgg16(BaseModel):
-    def __init__(self, inputs_shape, n_class):
+    def __init__(self, inputs_shape, n_class, dropout=0.75, learning_rate=0.001):
         self.name = 'vgg16'
-        super().__init__(inputs_shape, n_class)
+        super().__init__(inputs_shape, n_class, dropout, learning_rate)
 
     def build(self):
         self.conv1_1 = layer_utils.conv_layer(self.X, out_channels=64, kernel_size=[3, 3], name='conv1_1')

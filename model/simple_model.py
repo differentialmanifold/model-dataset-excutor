@@ -5,9 +5,9 @@ from model.base_model import BaseModel
 
 
 class Simple(BaseModel):
-    def __init__(self, inputs_shape, n_class):
+    def __init__(self, inputs_shape, n_class, dropout=0.75, learning_rate=0.001):
         self.name = 'simple'
-        super().__init__(inputs_shape, n_class)
+        super().__init__(inputs_shape, n_class, dropout, learning_rate)
 
     def build(self):
         self.conv1 = layer_utils.conv_layer(self.X, out_channels=32, kernel_size=[5, 5], name='conv1')

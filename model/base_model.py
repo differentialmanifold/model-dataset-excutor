@@ -4,7 +4,7 @@ from model import layer_utils
 
 
 class BaseModel:
-    def __init__(self, inputs_shape, n_class, dropout=0.75, learning_rate=0.001):
+    def __init__(self, inputs_shape, n_class, dropout, learning_rate):
         self.dropout = dropout
         self.learning_rate = learning_rate
         self.inputs_shape = inputs_shape
