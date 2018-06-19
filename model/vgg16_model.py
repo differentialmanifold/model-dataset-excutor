@@ -1,26 +1,15 @@
 import tensorflow as tf
 
 from model import layer_utils
+from model.base_model import BaseModel
 
 
-class Vgg16:
-    def __init__(self, inputs_shape, n_class, dropout=0.75, learning_rate=0.001):
+class Vgg16(BaseModel):
+    def __init__(self, inputs_shape, n_class):
         self.name = 'vgg16'
-        self.dropout = dropout
-        self.learning_rate = learning_rate
-        self.inputs_shape = inputs_shape
-        self.n_class = n_class
-        self.load()
+        super().__init__(inputs_shape, n_class)
 
-    def load(self):
-        with tf.name_scope('data'):
-            self.X = tf.placeholder(tf.float32, [None] + self.inputs_shape, name="X_placeholder")
-            self.Y = tf.placeholder(tf.float32, [None, self.n_class], name="Y_placeholder")
-
-        self.training = tf.placeholder(tf.bool, name='training')
-
-        self.global_step = tf.Variable(0, dtype=tf.int32, trainable=False, name='global_step')
-
+    def build(self):
         self.conv1_1 = layer_utils.conv_layer(self.X, out_channels=64, kernel_size=[3, 3], name='conv1_1')
         self.conv1_2 = layer_utils.conv_layer(self.conv1_1, out_channels=64, kernel_size=[3, 3], name='conv1_2')
         self.pool1 = layer_utils.max_pool(self.conv1_2, [2, 2], 2, name='pool1')
@@ -51,11 +40,3 @@ class Vgg16:
         self.drop7 = layer_utils.dropout_layer(self.fc7, keep_prob=self.dropout, training=self.training, name='drop7')
 
         self.logits = layer_utils.dense_layer(self.drop7, self.n_class, name='softmax_linear')
-
-        with tf.name_scope('loss'):
-            entropy = tf.nn.softmax_cross_entropy_with_logits(labels=self.Y, logits=self.logits)
-            self.loss = tf.reduce_mean(entropy, name='loss')
-
-        self.optimizer = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss, global_step=self.global_step)
-
-        self.accuracy = layer_utils.cal_accuracy(self.logits, self.Y)
