@@ -5,9 +5,10 @@ from model.base_model import BaseModel
 
 
 class Simple(BaseModel):
-    def __init__(self, inputs_shape, n_class, dropout=0.75, learning_rate=0.001):
+    def __init__(self, inputs_shape, n_class, dropout=0.75, learning_rate=0.001,
+                 loss_name='mean_softmax_cross_entropy'):
         self.name = 'simple'
-        super().__init__(inputs_shape, n_class, dropout, learning_rate)
+        super().__init__(inputs_shape, n_class, dropout, learning_rate, loss_name)
 
     def build(self):
         self.conv1 = layer_utils.conv_layer(self.X, out_channels=32, kernel_size=[5, 5], name='conv1')

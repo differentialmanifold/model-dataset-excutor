@@ -1,14 +1,16 @@
 import tensorflow as tf
 import os
 from model import layer_utils
+from model import losses
 
 
 class BaseModel:
-    def __init__(self, inputs_shape, n_class, dropout, learning_rate):
+    def __init__(self, inputs_shape, n_class, dropout, learning_rate, loss_name):
         self.dropout = dropout
         self.learning_rate = learning_rate
         self.inputs_shape = inputs_shape
         self.n_class = n_class
+        self.loss_name = loss_name
 
         parent_dir = os.path.dirname(os.path.dirname(__file__))
         self.train_writer = tf.summary.FileWriter(os.path.join(parent_dir, 'my_graph', self.name, 'train'))
@@ -35,8 +37,7 @@ class BaseModel:
         self.build()
 
         with tf.name_scope('loss'):
-            entropy = tf.nn.softmax_cross_entropy_with_logits(labels=self.Y, logits=self.logits)
-            self.loss = tf.reduce_mean(entropy, name='loss')
+            self.loss = losses.identify[self.loss_name](self.logits, self.Y)
 
         self.optimizer = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss, global_step=self.global_step)
 
